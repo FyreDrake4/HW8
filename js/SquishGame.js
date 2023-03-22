@@ -5,6 +5,8 @@ let amongUsSprite;
 let forestbackground;
 let level2 = 0;
 let level3 = 0;
+let startSound = 0;
+let gameoverSound = 0;
 
 let sounds = new Tone.Players({
     error: "assets/error.wav",
@@ -118,6 +120,8 @@ function reset() {
     Tone.Transport.bpm.value = 80;
     level2 = level3 = 0;
     gameovermelody.stop("0");
+    startSound = 0;
+    gameoverSound = 0;
 
     animations = [];
     let i = 0;
@@ -160,7 +164,13 @@ function draw() {
     switch (game.state) {
         case GameState.Playing:
             startmelody.stop("0");
-            melody.start("0");
+            gameovermelody.stop("0");
+            if (startSound == 0) {
+                Tone.Transport.stop("0");
+                melody.start("0");
+                Tone.Transport.start("+8n");
+                startSound = 1;
+            }
             image(forestbackground, 400, 300);
 
             for (let i = 0; i < animations.length; i++) {
@@ -191,7 +201,12 @@ function draw() {
             fill(255);
             melody.stop("0");
             Tone.Transport.bpm.value = 100;
-            gameovermelody.start("0");
+            if (gameoverSound == 0) {
+                Tone.Transport.stop();
+                gameovermelody.start("0");
+                Tone.Transport.start("+8n");
+                gameoverSound = 1;
+            }
             textSize(40);
             textAlign(CENTER);
             text("Game Over!", 400, 300);
